@@ -7,7 +7,7 @@ include 'jcart/jcart.php';
 session_start();
 
 // INITIALIZE JCART AFTER SESSION START
-$cart =& $_SESSION['jCart']; if(!is_object($cart)) $cart = new jCart();
+$cart =& $_SESSION['jcart']; if(!is_object($cart)) $cart = new jcart();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -17,7 +17,7 @@ $cart =& $_SESSION['jCart']; if(!is_object($cart)) $cart = new jCart();
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-		<title>jCart - Free AJAX/PHP shopping cart</title>
+		<title>jCart - Free Ajax/PHP shopping cart</title>
 
 		<style type="text/css">
 			* { margin:0; padding:0; }
@@ -26,6 +26,8 @@ $cart =& $_SESSION['jCart']; if(!is_object($cart)) $cart = new jCart();
 			body { font-size:1.5em; }
 
 			#wrapper { margin:30px auto 250px auto; width:890px; border:solid 1px #ccc; padding:30px; background:#efefef; }
+
+			h2 { margin-bottom:1em; }
 
 			#sidebar { width:35%; float:right; }
 
@@ -37,86 +39,83 @@ $cart =& $_SESSION['jCart']; if(!is_object($cart)) $cart = new jCart();
 			.jcart strong { color:#000066; }
 			.jcart .button { margin:20px; padding:5px; }
 
+			fieldset { border:0; }
+			#paypal-button { display:block; padding:10px; margin:20px auto; }
+
 			.clear { clear:both; }
 		</style>
 
-
 		<link rel="stylesheet" type="text/css" media="screen, projection" href="jcart/jcart.css" />
-
-		<script type="text/javascript" src="jcart/jquery-1.3.2.min.js"></script>
-
-		<script type="text/javascript" src="jcart/jcart-javascript.php"></script>
 
 	</head>
 	<body>
-
 		<div id="wrapper">
+			<h2>Demo Store</h2>
 
 			<div id="sidebar">
 				<?php $cart->display_cart($jcart);?>
 			</div>
 
 			<div id="content">
-
 				<form method="post" action="" class="jcart">
 					<fieldset>
-						<input type="hidden" name="my_item_id" value="1" />
-						<input type="hidden" name="my_item_name" value="Soccer Ball" />
-						<input type="hidden" name="my_item_price" value="25.00" />
+						<input type="hidden" name="my-item-id" value="1" />
+						<input type="hidden" name="my-item-name" value="Soccer Ball" />
+						<input type="hidden" name="my-item-price" value="25.00" />
 
 						<ul>
 							<li><strong>Soccer Ball</strong></li>
 							<li>Price: $25.00</li>
 							<li>
-								<label>Qty: <input type="text" name="my_item_qty" value="1" size="3" /></label>
+								<label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
 							</li>
 						</ul>
 
-						<input type="submit" name="my_add_button" value="add to cart" class="button" />
+						<input type="submit" name="my-add-button" value="add to cart" class="button" />
 					</fieldset>
 				</form>
 
 				<form method="post" action="" class="jcart">
 					<fieldset>
-						<input type="hidden" name="my_item_id" value="2" />
-						<input type="hidden" name="my_item_name" value="Baseball Mitt" />
-						<input type="hidden" name="my_item_price" value="19.50" />
+						<input type="hidden" name="my-item-id" value="2" />
+						<input type="hidden" name="my-item-name" value="Baseball Mitt" />
+						<input type="hidden" name="my-item-price" value="19.50" />
 
 						<ul>
 							<li><strong>Baseball Mitt</strong></li>
 							<li>Price: $19.50</li>
 							<li>
-								<label>Qty: <input type="text" name="my_item_qty" value="1" size="3" /></label>
+								<label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
 							</li>
 						</ul>
 
-						<input type="submit" name="my_add_button" value="add to cart" class="button" />
+						<input type="submit" name="my-add-button" value="add to cart" class="button" />
 					</fieldset>
 				</form>
 
 				<form method="post" action="" class="jcart">
 					<fieldset>
-						<input type="hidden" name="my_item_id" value="3" />
-						<input type="hidden" name="my_item_name" value="Hockey Stick" />
-						<input type="hidden" name="my_item_price" value="33.25" />
+						<input type="hidden" name="my-item-id" value="3" />
+						<input type="hidden" name="my-item-name" value="Hockey Stick" />
+						<input type="hidden" name="my-item-price" value="33.25" />
 
 						<ul>
 							<li><strong>Hockey Stick</strong></li>
 							<li>Price: $33.25</li>
 							<li>
-								<label>Qty: <input type="text" name="my_item_qty" value="1" size="3" /></label>
+								<label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
 							</li>
 						</ul>
 
-						<input type="submit" name="my_add_button" value="add to cart" class="button" />
+						<input type="submit" name="my-add-button" value="add to cart" class="button" />
 					</fieldset>
 				</form>
 
 				<div class="clear"></div>
-
 			</div>
-
 		</div>
 
+		<script type="text/javascript" src="jcart/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="jcart/jcart-javascript.min.php"></script>
 	</body>
 </html>
