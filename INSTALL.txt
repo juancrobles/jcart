@@ -1,1 +1,106 @@
 See: http://conceptlogic.com/jcart/install.php
+
+Install jCart
+
+First grab a copy of jCart from Google Project Hosting, then extract the files and upload the jcart-1.3 directory to your server. Now visit your site and open jcart-1.3/index.php in your web browser to view a working demonstration.
+
+Next, learn how to integrate jCart with your existing website.
+1 - Edit config.php
+
+To accept items from your store jCart needs to know the field names used in your item forms. Open config.php and fill in each variable with the HTML name attribute from the corresponding input element.
+
+If your item form looks like this:
+<form method="post" action="">
+  <fieldset>
+    <input type="hidden" name="my-item-id" value="1" />
+    <input type="hidden" name="my-item-name" value="Soccer Ball" />
+    <input type="hidden" name="my-item-price" value="25.00" />
+    <input type="hidden" name="my-item-url" value="" />
+
+    <ul>
+      <li><strong>Soccer Ball</strong></li>
+      <li>Price: $25.00</li>
+      <li>
+        <label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
+      </li>
+    </ul>
+
+    <input type="submit" name="my-add-button" value="add to cart" class="button" />
+  </fieldset>
+</form>
+
+Your config file should look like this:
+<?php
+
+// The HTML name attributes used in your item forms
+$config['item']['id']             = 'my-item-id';    // Item id
+$config['item']['name']           = 'my-item-name';    // Item name
+$config['item']['price']          = 'my-item-price';    // Item price
+$config['item']['qty']            = 'my-item-qty';    // Item quantity
+$config['item']['url']            = 'my-item-url';    // Item URL (optional)
+$config['item']['add']            = 'my-add-button';    // Add to cart button
+
+?>
+PayPal integration
+
+To enable PayPal integration, set your secure merchant ID as the value of the $config['paypal']['id'] variable.
+
+If not using PayPal integration, view the source of gateway.php for an example of how to pass the cart contents to your checkout script or payment processor.
+Additional config variables
+
+$config['jcartPath'] Edit as needed if using a different directory structure.
+
+$config['checkoutPath'] Specifies where the cart contents should be posted when a visitor clicks the checkout button.
+
+$config['csrfToken'] Specifies whether POST requests should include a unique token to prevent CSRF attacks. Learn more.
+
+While editing the config file you can override the default wording used in the cart display by setting your own values, and also use your own image buttons if you’d like.
+2 - Initialize
+
+Include the following block of PHP code at the beginning of each page that will display the shopping cart. Again, be sure to set the correct include path if using a different directory structure.
+<?php
+
+// If your page calls session_start() be sure to include jcart.php first
+include_once('jcart/jcart.php');
+
+?>
+3 - Display the cart
+
+Add the following PHP code to each page where you want to display the cart, inside a sidebar for instance.
+<div id="jcart"><?php $jcart->display_cart();?></div>
+
+At this point the basic cart is fully functional, so feel free to skip the remaining steps if you just want an unstyled shopping cart without Ajax. But how much fun would that be?
+4 - Add CSS & JS
+
+Add the CSS and JS files to your HTML header.
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <title>jCart - Free Ajax/PHP shopping cart</title>
+
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="style.css" />
+
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="jcart/css/jcart.css" />
+
+    <script type="text/javascript" src="jcart/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="jcart/js/jcart.min.js"></script>
+  <body>
+
+Ideally, the scripts should be placed at the bottom of your page, but they’ll work fine as shown in the example above.
+5 - Add class="jcart" to your item forms
+
+Whether your items are drawn from a database or hard-coded, simply add the CSS class jcart to your item forms as shown. This step enables Ajax by telling jCart which form submissions to process.
+<form method="post" action="" class="jcart">
+  <fieldset>
+    <input type="hidden" name="my-item-id" value="1" />
+    <input type="hidden" name="my-item-name" value="Soccer Ball" />
+    <input type="hidden" name="my-item-price" value="25.00" />
+    <input type="hidden" name="my-item-url" value="" />
+
+    ...
+6 - Customize jcart.css
+
+jCart comes with minimal styling for easy customization. Open jcart.css to edit the default styles and see some of the available selectors.
+
+Congratulations! You should now have a sexy new Ajax shopping cart.
