@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 // SESSION BASED SHOPPING CART CLASS FOR JCART
@@ -16,6 +16,29 @@ include_once('jcart-config.php');
 
 // DEFAULT CONFIG VALUES
 include_once('jcart-defaults.php');
+
+
+// ENABLE REQUEST_URI FOR NON-APACHE ENVIRONMENTS
+// SEE: http://api.drupal.org/api/function/request_uri/7
+function request_uri() {
+	if (isset($_SERVER['REQUEST_URI'])) {
+		$uri = $_SERVER['REQUEST_URI'];
+	}
+	else {
+		if (isset($_SERVER['argv'])) {
+			$uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['argv'][0];
+		}
+		elseif (isset($_SERVER['QUERY_STRING'])) {
+			$uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING'];
+		}
+		else {
+			$uri = $_SERVER['SCRIPT_NAME'];
+		}
+	}
+	$uri = '/' . ltrim($uri, '/');
+	return $uri;
+}
+
 
 // JCART
 class jcart {
@@ -249,59 +272,76 @@ class jcart {
 		$item_qty = $_POST[$item_qty];
 		$item_price = $_POST[$item_price];
 		$item_name = $_POST[$item_name];
+		$jcart_token = $_POST['jcart_token'];
 
-		// ADD AN ITEM
-		if ($_POST[$item_add])
-			{
-			$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name);
-			// IF NOT TRUE THE ADD ITEM FUNCTION RETURNS THE ERROR TYPE
-			if ($item_added !== true)
+		$_SESSION['jcart_token'] = strrev(md5(session_id() . $_SERVER['HTTP_USER_AGENT']));
+
+		if ($csrf_token === true && $_POST && $jcart_token != $_SESSION['jcart_token']) {
+			$error_message = 'Invalid token!';
+		}
+		else {
+			// SANITIZE ITEM ID
+			$item_id = filter_var($item_id, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_LOW);
+
+			// SANITIZE ITEM NAME
+			$item_name = filter_var($item_name, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_LOW);
+
+			// ADD AN ITEM
+			if ($_POST[$item_add])
 				{
-				$error_type = $item_added;
-				switch($error_type)
+				$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name);
+				// IF NOT TRUE THE ADD ITEM FUNCTION RETURNS THE ERROR TYPE
+				if ($item_added !== true)
 					{
-					case 'qty':
-						$error_message = $text['quantity_error'];
-						break;
-					case 'price':
-						$error_message = $text['price_error'];
-						break;
+					$error_type = $item_added;
+					switch($error_type)
+						{
+						case 'qty':
+							$error_message = $text['quantity_error'];
+							break;
+						case 'price':
+							$error_message = $text['price_error'];
+							break;
+						}
 					}
 				}
-			}
 
-		// UPDATE A SINGLE ITEM
-		// CHECKING POST VALUE AGAINST $text ARRAY FAILS?? HAVE TO CHECK AGAINST $jcart ARRAY
-		if ($_POST['jcart_update_item'] == $jcart['text']['update_button'])
-			{
-			$item_updated = $this->update_item($_POST['item_id'], $_POST['item_qty']);
-			if ($item_updated !== true)
+			// UPDATE A SINGLE ITEM
+			// CHECKING POST VALUE AGAINST $text ARRAY FAILS?? HAVE TO CHECK AGAINST $jcart ARRAY
+			if ($_POST['jcart_update_item'] == $jcart['text']['update_button'])
 				{
-				$error_message = $text['quantity_error'];
+				$item_updated = $this->update_item($_POST['item_id'], $_POST['item_qty']);
+				if ($item_updated !== true)
+					{
+					$error_message = $text['quantity_error'];
+					}
 				}
-			}
 
-		// UPDATE ALL ITEMS IN THE CART
-		if($_POST['jcart_update_cart'] || $_POST['jcart_checkout'])
-			{
-			$cart_updated = $this->update_cart();
-			if ($cart_updated !== true)
+			// UPDATE ALL ITEMS IN THE CART
+			if($_POST['jcart_update_cart'] || $_POST['jcart_checkout'])
 				{
-				$error_message = $text['quantity_error'];
+				$cart_updated = $this->update_cart();
+				if ($cart_updated !== true)
+					{
+					$error_message = $text['quantity_error'];
+					}
 				}
-			}
 
-		// REMOVE AN ITEM
-		if($_GET['jcart_remove'] && !$_POST[$item_add] && !$_POST['jcart_update_cart'] && !$_POST['jcart_check_out'])
-			{
-			$this->del_item($_GET['jcart_remove']);
-			}
+			// REMOVE AN ITEM
+			if($_GET['jcart_remove'] && !$_POST[$item_add] && !$_POST['jcart_update_cart'] && !$_POST['jcart_check_out'])
+				{
+				$this->del_item($_GET['jcart_remove']);
+				}
 
-		// EMPTY THE CART
-		if($_POST['jcart_empty'])
-			{
-			$this->empty_cart();
-			}
+			// EMPTY THE CART
+			if($_POST['jcart_empty'])
+				{
+				$this->empty_cart();
+				}
+		}
+
+
+
 
 		// DETERMINE WHICH TEXT TO USE FOR THE NUMBER OF ITEMS IN THE CART
 		if ($this->itemcount >= 0)
@@ -316,7 +356,7 @@ class jcart {
 		// DETERMINE IF THIS IS THE CHECKOUT PAGE
 		// WE FIRST CHECK THE REQUEST URI AGAINST THE USER CONFIG CHECKOUT (SET WHEN THE VISITOR FIRST CLICKS CHECKOUT)
 		// WE ALSO CHECK FOR THE REQUEST VAR SENT FROM HIDDEN INPUT SENT BY AJAX REQUEST (SET WHEN VISITOR HAS JAVASCRIPT ENABLED AND UPDATES AN ITEM QTY)
-		$is_checkout = strpos($_SERVER['REQUEST_URI'], $form_action);
+		$is_checkout = strpos(request_uri(), $form_action);
 		if ($is_checkout !== false || $_REQUEST['jcart_is_checkout'] == 'true')
 			{
 			$is_checkout = true;
@@ -359,6 +399,7 @@ class jcart {
 		echo "\t$error_message\n";
 		echo "\t<form method='post' action='$form_action'>\n";
 		echo "\t\t<fieldset>\n";
+		echo "\t\t\t<input type='hidden' name='jcart_token' value='" . $_SESSION['jcart_token'] . "' />\n";
 		echo "\t\t\t<table border='1'>\n";
 		echo "\t\t\t\t<tr>\n";
 		echo "\t\t\t\t\t<th id='jcart-header' colspan='3'>\n";
@@ -429,11 +470,6 @@ class jcart {
 			// WE NORMALLY CHECK AGAINST REQUEST URI BUT AJAX UPDATE SETS VALUE TO jcart-relay.php
 			echo "\t\t\t<input type='hidden' id='jcart-is-checkout' name='jcart_is_checkout' value='true' />\n";
 
-			// SEND THE URL OF THE CHECKOUT PAGE TO jcart-gateway.php
-			// WHEN JAVASCRIPT IS DISABLED WE USE A HEADER REDIRECT AFTER THE UPDATE OR EMPTY BUTTONS ARE CLICKED
-			$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
-			echo "\t\t\t<input type='hidden' id='jcart-checkout-page' name='jcart_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "' />\n";
-
 			// PAYPAL CHECKOUT BUTTON
 			if ($button['paypal_checkout'])	{ $input_type = 'image'; $src = ' src="' . $button['paypal_checkout'] . '" alt="' . $text['checkout_paypal_button'] . '" title="" '; }
 			echo "\t\t\t<input type='" . $input_type . "' " . $src ."id='jcart-paypal-checkout' name='jcart_paypal_checkout' value='" . $text['checkout_paypal_button'] . "'" . $disable_paypal_checkout . " />\n";
@@ -442,7 +478,7 @@ class jcart {
 		echo "\t</form>\n";
 
 		// IF UPDATING AN ITEM, FOCUS ON ITS QTY INPUT AFTER THE CART IS LOADED (DOESN'T SEEM TO WORK IN IE7)
-		if ($_POST['jcart_update_item'])
+		if ($_POST['jcart_update_item'] && ctype_digit($_POST['item_id']))
 			{
 			echo "\t" . '<script type="text/javascript">$(function(){$("#jcart-item-id-' . $_POST['item_id'] . '").focus()});</script>' . "\n";
 			}

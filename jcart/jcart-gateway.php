@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 // THIS FILE IS CALLED WHEN ANY BUTTON ON THE CHECKOUT PAGE (PAYPAL CHECKOUT, UPDATE, OR EMPTY) IS CLICKED
@@ -38,7 +38,9 @@ if ($_POST['jcart_update_cart']  || $_POST['jcart_empty'])
 		}
 
 	// REDIRECT BACK TO THE CHECKOUT PAGE
-	header('Location: ' . $_POST['jcart_checkout_page']);
+	$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
+
+	header('Location: ' . $protocol . $_SERVER['HTTP_HOST'] . $jcart['form_action']);
 	exit;
 	}
 

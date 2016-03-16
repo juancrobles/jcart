@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 // THIS FILE TAKES INPUT FROM AJAX REQUESTS VIA JQUERY post AND get METHODS, THEN PASSES DATA TO JCART

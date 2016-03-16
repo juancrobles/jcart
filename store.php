@@ -57,6 +57,7 @@ $cart =& $_SESSION['jcart']; if(!is_object($cart)) $cart = new jcart();
 			</div>
 
 			<div id="content">
+
 				<form method="post" action="" class="jcart">
 					<fieldset>
 						<input type="hidden" name="my-item-id" value="1" />

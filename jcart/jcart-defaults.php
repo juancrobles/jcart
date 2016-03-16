@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 // DEFAULT CART TEXT USED IF NOT OVERRIDDEN IN jcart-config.php

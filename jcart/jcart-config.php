@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 ///////////////////////////////////////////////////////////////////////
@@ -14,11 +14,11 @@ $jcart['item_qty']		= 'my-item-qty';		// ITEM QTY
 $jcart['item_add']		= 'my-add-button';		// ADD-TO-CART BUTTON
 
 // PATH TO THE DIRECTORY CONTAINING JCART FILES
-$jcart['path'] = 'jcart/';
+$jcart['path'] = '/jcart/1.2/jcart/';
 
-// THE PATH AND FILENAME WHERE SHOPPING CART CONTENTS SHOULD BE POSTED WHEN A VISITOR CLICKS THE CHECKOUT BUTTON
+// PATH TO YOUR CHECKOUT PAGE (RELATIVE TO YOUR DOMAIN ROOT)
 // USED AS THE ACTION ATTRIBUTE FOR THE SHOPPING CART FORM
-$jcart['form_action']	= 'checkout.php';
+$jcart['form_action']	= '/jcart/1.2/checkout.php';
 
 // YOUR PAYPAL SECURE MERCHANT ACCOUNT ID
 $jcart['paypal_id']		= '';
@@ -51,5 +51,9 @@ $jcart['button']['checkout']				= '';
 $jcart['button']['paypal_checkout']			= '';
 $jcart['button']['update']					= '';
 $jcart['button']['empty']					= '';
+
+// ADD A UNIQUE TOKEN TO FORM POSTS TO PREVENT CSRF EXPLOITS
+// LEARN MORE: http://conceptlogic.com/jcart/csrf/
+$jcart['csrf_token']                        = false;
 
 ?>

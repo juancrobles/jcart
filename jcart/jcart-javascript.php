@@ -1,6 +1,6 @@
 <?php
 
-// JCART v1.1
+// JCART v1.2
 // http://conceptlogic.com/jcart/
 
 // INCLUDE CONFIG SO THIS SCRIPT HAS ACCESS USER FIELD NAMES
@@ -174,7 +174,7 @@ $(function(){
 		var itemAdd = $(this).find('input[name=<?php echo $jcart['item_add']?>]').val();
 
 		// SEND ITEM INFO VIA POST TO INTERMEDIATE SCRIPT WHICH CALLS jcart.php AND RETURNS UPDATED CART HTML
-		$.post('<?php echo $jcart['path'];?>jcart-relay.php', { "<?php echo $jcart['item_id']?>": itemId, "<?php echo $jcart['item_price']?>": itemPrice, "<?php echo $jcart['item_name']?>": itemName, "<?php echo $jcart['item_qty']?>": itemQty, "<?php echo $jcart['item_add']?>" : itemAdd }, function(data) {
+		$.post('<?php echo $jcart['path'];?>jcart-relay.php', { "<?php echo $jcart['item_id']?>": itemId, "<?php echo $jcart['item_price']?>": itemPrice, "<?php echo $jcart['item_name']?>": itemName, "<?php echo $jcart['item_qty']?>": itemQty, "<?php echo $jcart['item_add']?>" : itemAdd, "jcart_token": ""}, function(data) {
 
 			// REPLACE EXISTING CART HTML WITH UPDATED CART HTML
 			$('#jcart').html(data);
@@ -253,7 +253,7 @@ $(function(){
 			var updateDelay = setTimeout(function(){
 
 				// SEND ITEM INFO VIA POST TO INTERMEDIATE SCRIPT WHICH CALLS jcart.php AND RETURNS UPDATED CART HTML
-				$.post('<?php echo $jcart['path'];?>jcart-relay.php', { "item_id": updateId, "item_qty": updateQty, "jcart_update_item": '<?php echo $jcart['text']['update_button'];?>', "jcart_is_checkout": isCheckout }, function(data) {
+				$.post('<?php echo $jcart['path'];?>jcart-relay.php', { "item_id": updateId, "item_qty": updateQty, "jcart_update_item": '<?php echo $jcart['text']['update_button'];?>', "jcart_is_checkout": isCheckout, "jcart_token": ""}, function(data) {
 
 					// REPLACE EXISTING CART HTML WITH UPDATED CART HTML
 					$('#jcart').html(data);
